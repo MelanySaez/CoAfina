@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { Header } from "@/components/header"
-import { SankeyTab } from "@/components/sankey-tab"
+import { DataPanelTab } from "@/components/data-panel-tab"
 import { FlagIcon } from "@/components/flag-icon"
 import { API_CONFIG, buildApiUrl } from "@/lib/api-config"
 import type { CountryPlacement, CountryMetrics } from "@/utils/interfaces"
@@ -173,14 +173,14 @@ export default function Home() {
           Análisis Comparativo
         </button>
         <button
-          onClick={() => setActiveTab("sankey")}
+          onClick={() => setActiveTab("data-panel")}
           className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-            activeTab === "sankey"
+            activeTab === "data-panel"
               ? "border-b-2 border-primary text-primary"
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Flujos Globales (Sankey)
+          Panel de Datos
         </button>
       </div>
 
@@ -387,7 +387,7 @@ export default function Home() {
             )}
           </div>
         )}
-        {activeTab === "sankey" && <SankeyTab />}
+  {activeTab === "data-panel" && <DataPanelTab />}
       </div>
     </div>
   )
