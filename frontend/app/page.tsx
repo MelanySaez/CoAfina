@@ -128,9 +128,11 @@ export default function LandingPage() {
                   </svg>
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 hover:bg-accent/10">
-                Ver Documentación
-              </Button>
+              <Link href="https://github.com/MelanySaez/CoAfina" target="_blank">
+                <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-2 hover:bg-accent/10">
+                  Ver Documentación
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -145,23 +147,23 @@ export default function LandingPage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <Card className="p-8 text-center bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 hover:border-primary/50 transition-all hover:shadow-xl hover:shadow-primary/20 scroll-reveal">
-              <div className="text-5xl font-black text-primary mb-3">15+</div>
-              <div className="text-lg font-bold text-foreground mb-2">Países Analizados</div>
+              <div className="text-5xl font-black text-primary mb-3">13</div>
+              <div className="text-lg font-bold text-foreground mb-2">Países Base</div>
               <div className="text-sm text-muted-foreground">
-                Cobertura completa de Latinoamérica con datos actualizados
+                Datos de Latinoamérica con capacidad de importar CSVs personalizados
               </div>
             </Card>
 
             <Card className="p-8 text-center bg-gradient-to-br from-secondary/10 to-secondary/5 border-2 border-secondary/30 hover:border-secondary/50 transition-all hover:shadow-xl hover:shadow-secondary/20 scroll-reveal">
-              <div className="text-5xl font-black text-secondary mb-3">50K+</div>
-              <div className="text-lg font-bold text-foreground mb-2">Registros Procesados</div>
+              <div className="text-5xl font-black text-secondary mb-3">∞</div>
+              <div className="text-lg font-bold text-foreground mb-2">Datasets Personalizables</div>
               <div className="text-sm text-muted-foreground">
-                Miles de puntos de datos analizados y verificados
+                Carga tus propios CSVs y compara datos en tiempo real
               </div>
             </Card>
 
             <Card className="p-8 text-center bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/30 hover:border-accent/50 transition-all hover:shadow-xl hover:shadow-accent/20 scroll-reveal">
-              <div className="text-5xl font-black text-accent mb-3">100+</div>
+              <div className="text-5xl font-black text-accent mb-3">30+</div>
               <div className="text-lg font-bold text-foreground mb-2">Artículos Científicos</div>
               <div className="text-sm text-muted-foreground">
                 Repositorio integrado con investigación de vanguardia
