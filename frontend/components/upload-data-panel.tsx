@@ -257,7 +257,7 @@ export function UploadDataPanel({
               {error && (
                 <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+                    <AlertCircle className="w-4 h-4 text-destructive shrink-0" />
                     <p className="text-sm text-destructive">{error}</p>
                   </div>
                 </div>
@@ -267,7 +267,7 @@ export function UploadDataPanel({
               {showSuccess && (
                 <div className="p-4 rounded-lg bg-primary/10 border border-primary/30 animate-in fade-in slide-in-from-top-2 duration-300">
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0" />
                     <div>
                       <h3 className="text-sm font-semibold text-foreground">
                         ¡Subido exitosamente!

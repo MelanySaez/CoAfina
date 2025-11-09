@@ -14,7 +14,7 @@ app = FastAPI(
 # Configurar CORS para permitir peticiones desde el frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", 'https://intentov3.vercel.app/', 'https://co-afina-b4wp.vercel.app/'],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
