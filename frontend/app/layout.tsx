@@ -7,9 +7,9 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'E-wasted',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'E-Waste Analytics - Transformando Datos en Impacto Ambiental',
+  description: 'Plataforma de análisis y visualización de residuos electrónicos (RAEE) en Latinoamérica. Empoderamos con datos precisos para impulsar la economía circular.',
+  generator: 'Next.js',
   icons: {
     icon: [
       {

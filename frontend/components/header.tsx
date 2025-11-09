@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { BookOpen, Sparkles } from "lucide-react"
 import { ResearchRepositoryPanel } from "./research-repository-panel"
 
@@ -11,8 +12,8 @@ export function Header() {
     <>
       <header className="border-b border-border bg-gradient-to-r from-card via-primary/5 to-card px-8 py-6 shadow-lg backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-secondary to-accent text-primary-foreground font-bold text-xl shadow-lg shadow-primary/30 transition-transform hover:scale-110">
+          <Link href="/" className="flex items-center gap-4 group">
+            <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-secondary to-accent text-primary-foreground font-bold text-xl shadow-lg shadow-primary/30 transition-transform group-hover:scale-110">
               <Sparkles className="h-6 w-6" />
             </div>
             <div>
@@ -23,7 +24,7 @@ export function Header() {
                 Análisis modular de residuos electrónicos en Latinoamérica
               </p>
             </div>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsRepositoryOpen(true)}
