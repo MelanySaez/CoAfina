@@ -2,18 +2,104 @@
 
 import type React from "react"
 import { useState } from "react"
-import { X, Upload, CheckCircle2 } from "lucide-react"
+import { X, Upload, CheckCircle2, Loader2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { supabase } from "@/lib/supabase"
 
 interface UploadDataPanelProps {
   isOpen: boolean
   onClose: () => void
-  onFilesUploaded: (files: File[]) => void
+  onFilesUploaded?: (files: File[]) => void
 }
 
 export function UploadDataPanel({ isOpen, onClose, onFilesUploaded }: UploadDataPanelProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+
+  const parseCSV = async (file: File): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const text = e.target?.result as string
+        const lines = text.split('\n')
+        const headers = lines[0].split(',').map(h => h.trim())
+        
+        const data = lines.slice(1)
+          .filter(line => line.trim())
+          .map(line => {
+            const values = line.split(',')
+            const obj: any = {}
+            headers.forEach((header, index) => {
+              obj[header] = values[index]?.trim() || ''
+            })
+            return obj
+          })
+        
+        resolve(data)
+      }
+      reader.onerror = reject
+      reader.readAsText(file)
+    })
+  }
+
+  const uploadToSupabase = async () => {
+    if (selectedFiles.length === 0) {
+      setError("Por favor selecciona al menos un archivo")
+      return
+    }
+
+    setIsUploading(true)
+    setError(null)
+
+    try {
+      for (const file of selectedFiles) {
+        // 1. Subir a Storage
+        const fileName = `${Date.now()}_${file.name}`
+        const { error: uploadError } = await supabase.storage
+          .from('csv-uploads')
+          .upload(fileName, file)
+
+        if (uploadError) throw new Error(`Error al subir ${file.name}: ${uploadError.message}`)
+
+        // 2. Obtener URL pública
+        const { data: urlData } = supabase.storage
+          .from('csv-uploads')
+          .getPublicUrl(fileName)
+
+        // 3. Guardar metadata en DB (solo las 4 columnas que tienes)
+        const { error: dbError } = await supabase
+          .from('csv_files')
+          .insert({
+            filename: file.name,
+            csv_filepath: urlData.publicUrl
+          })
+
+        if (dbError) throw new Error(`Error al guardar ${file.name}: ${dbError.message}`)
+      }
+
+      // Callback opcional para compatibilidad
+      if (onFilesUploaded) {
+        onFilesUploaded(selectedFiles)
+      }
+
+      setShowSuccess(true)
+      setSelectedFiles([])
+      
+      setTimeout(() => {
+        setShowSuccess(false)
+        onClose()
+      }, 2000)
+
+    } catch (err: any) {
+      console.error("Error al subir archivos:", err)
+      setError(err.message || "Error desconocido al subir archivos")
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault()
@@ -32,11 +118,8 @@ export function UploadDataPanel({ isOpen, onClose, onFilesUploaded }: UploadData
     const csvFiles = files.filter((file) => file.name.endsWith(".csv"))
 
     if (csvFiles.length > 0) {
-      onFilesUploaded(csvFiles)
-      setShowSuccess(true)
-      setTimeout(() => {
-        setShowSuccess(false)
-      }, 3000)
+      setSelectedFiles(csvFiles)
+      setError(null)
     }
   }
 
@@ -45,11 +128,8 @@ export function UploadDataPanel({ isOpen, onClose, onFilesUploaded }: UploadData
     const csvFiles = files.filter((file) => file.name.endsWith(".csv"))
 
     if (csvFiles.length > 0) {
-      onFilesUploaded(csvFiles)
-      setShowSuccess(true)
-      setTimeout(() => {
-        setShowSuccess(false)
-      }, 3000)
+      setSelectedFiles(csvFiles)
+      setError(null)
     }
   }
 
@@ -73,8 +153,9 @@ export function UploadDataPanel({ isOpen, onClose, onFilesUploaded }: UploadData
 
           {/* Content */}
           <div className="flex-1 p-6 overflow-y-auto">
-            <div className="h-full flex items-center justify-center">
-              <div className="w-full">
+            <div className="space-y-6">
+              {/* Area de Upload */}
+              <div>
                 <h3 className="text-sm font-semibold text-foreground mb-4">Adjunta y verás</h3>
 
                 <label htmlFor="panel-file-upload">
@@ -97,22 +178,69 @@ export function UploadDataPanel({ isOpen, onClose, onFilesUploaded }: UploadData
                       accept=".csv"
                       onChange={handleFileSelect}
                       className="hidden"
+                      disabled={isUploading}
                     />
                   </div>
                 </label>
 
-                {showSuccess && (
-                  <div className="mt-4 p-4 rounded-lg bg-primary/10 border border-primary/30 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">¡Adjuntado exitosamente!</h3>
-                        <p className="text-xs text-muted-foreground">Los archivos se han añadido a la lista de datos</p>
-                      </div>
-                    </div>
+                {/* Lista de archivos seleccionados */}
+                {selectedFiles.length > 0 && (
+                  <div className="mt-4 p-3 bg-muted rounded-lg">
+                    <p className="text-sm font-medium mb-2">Archivos seleccionados:</p>
+                    <ul className="space-y-1">
+                      {selectedFiles.map((file, idx) => (
+                        <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
+                          <CheckCircle2 className="w-3 h-3 text-primary" />
+                          {file.name}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>
+
+              {/* Mensajes de error */}
+              {error && (
+                <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+                    <p className="text-sm text-destructive">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Mensaje de éxito */}
+              {showSuccess && (
+                <div className="p-4 rounded-lg bg-primary/10 border border-primary/30 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">¡Subido exitosamente!</h3>
+                      <p className="text-xs text-muted-foreground">Los archivos se han guardado en la base de datos</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Botón de Upload */}
+              <Button
+                onClick={uploadToSupabase}
+                disabled={selectedFiles.length === 0 || isUploading}
+                className="w-full"
+                size="lg"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Subiendo a Supabase...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    Subir {selectedFiles.length > 0 ? `${selectedFiles.length} archivo${selectedFiles.length > 1 ? 's' : ''}` : 'archivos'}
+                  </>
+                )}
+              </Button>
             </div>
           </div>
         </div>

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { X, Tag, ExternalLink, Calendar } from "lucide-react"
+import { useState, useEffect } from "react"
+import { X, Tag, ExternalLink, Calendar, Loader2 } from "lucide-react"
+import { searchArxiv, ArxivArticle, DEFAULT_QUERY } from "@/lib/arxiv-service"
 
 interface ResearchItem {
   id: string
@@ -21,55 +22,100 @@ interface ResearchRepositoryPanelProps {
 
 export function ResearchRepositoryPanel({ isOpen, onClose }: ResearchRepositoryPanelProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [arxivResults, setArxivResults] = useState<ArxivArticle[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
-  // Sample research data - en producción vendría de una API
+  // Etiquetas personalizables para filtrar artículos
   const allTags = [
-    "E-waste",
-    "Latinoamérica",
     "Reciclaje",
     "Economía Circular",
     "Políticas Públicas",
     "Toxicidad",
-    "Minería Urbana",
     "Exportación",
+    "Gestión",
+    "Sostenibilidad",
+    "Legislación",
   ]
 
-  const researchItems: ResearchItem[] = [
-    {
-      id: "1",
-      title: "Electronic Waste Management in Latin America: Current Status and Future Perspectives",
-      authors: "García, M., Santos, R., López, A.",
-      date: "2024-01",
-      source: "arXiv",
-      tags: ["E-waste", "Latinoamérica", "Políticas Públicas"],
-      url: "#",
-      abstract: "Comprehensive analysis of e-waste management practices across Latin American countries...",
-    },
-    {
-      id: "2",
-      title: "Circular Economy Models for Electronic Waste Recycling",
-      authors: "Fernández, J., Morales, C.",
-      date: "2023-11",
-      source: "Environmental Science Journal",
-      tags: ["Economía Circular", "Reciclaje", "Minería Urbana"],
-      url: "#",
-      abstract: "This paper explores innovative circular economy models applied to e-waste recycling...",
-    },
-    {
-      id: "3",
-      title: "Toxic Components in Electronic Waste: Health and Environmental Impacts",
-      authors: "Silva, P., Ramirez, L.",
-      date: "2023-09",
-      source: "arXiv",
-      tags: ["Toxicidad", "E-waste"],
-      url: "#",
-      abstract: "Study on the toxic substances present in electronic waste and their environmental impact...",
-    },
-  ]
+  // Convertir resultados de arXiv a formato ResearchItem
+  const arxivToResearchItems = (articles: ArxivArticle[]): ResearchItem[] => {
+    return articles.map((article) => {
+      // Inferir tags basándose en el contenido
+      const inferredTags: string[] = []
+      const searchText = (article.title + " " + article.summary).toLowerCase()
+      
+      if (searchText.includes("recicl") || searchText.includes("recycl")) inferredTags.push("Reciclaje")
+      if (searchText.includes("circular") || searchText.includes("economy")) inferredTags.push("Economía Circular")
+      if (searchText.includes("polic") || searchText.includes("law") || searchText.includes("regulation")) 
+        inferredTags.push("Políticas Públicas")
+      if (searchText.includes("toxic") || searchText.includes("tóxico")) inferredTags.push("Toxicidad")
+      if (searchText.includes("mining") || searchText.includes("minería")) inferredTags.push("Minería Urbana")
+      if (searchText.includes("export") || searchText.includes("import")) inferredTags.push("Exportación")
+      if (searchText.includes("management") || searchText.includes("gestión")) inferredTags.push("Gestión")
+      if (searchText.includes("sustain") || searchText.includes("sostenib")) inferredTags.push("Sostenibilidad")
+      if (searchText.includes("legislation") || searchText.includes("legisla")) inferredTags.push("Legislación")
+      
+      // Siempre incluir E-waste
+      if (!inferredTags.includes("E-waste")) inferredTags.unshift("E-waste")
 
+      return {
+        id: article.id,
+        title: article.title,
+        authors: article.authors.join(", "),
+        date: article.published,
+        source: "arXiv",
+        tags: inferredTags,
+        url: article.link,
+        abstract: article.summary,
+      }
+    })
+  }
+
+  // Cargar resultados de arXiv al abrir el panel
+  useEffect(() => {
+    const loadDefaultResults = async () => {
+      if (isOpen && arxivResults.length === 0 && !isLoading) {
+        setIsLoading(true)
+        setLoadError(null)
+        
+        console.log("Cargando artículos desde arXiv...")
+        console.log("Query:", DEFAULT_QUERY)
+        
+        try {
+          const results = await searchArxiv({
+            query: DEFAULT_QUERY,
+            maxResults: 30,
+          })
+          
+          console.log(`Artículos cargados: ${results.length}`)
+          setArxivResults(results)
+          
+          if (results.length === 0) {
+            setLoadError("No se encontraron artículos. La API de arXiv puede estar temporalmente no disponible.")
+          }
+        } catch (error) {
+          console.error("Error al cargar artículos:", error)
+          setLoadError("Error al cargar los artículos. Por favor, recarga la página.")
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadDefaultResults()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen])
+
+  const researchItems = arxivToResearchItems(arxivResults)
+
+  // Filtrar por etiquetas
   const filteredResearch = researchItems.filter((item) => {
-    const matchesTags = selectedTags.length === 0 || selectedTags.every((tag) => item.tags.includes(tag))
-    return matchesTags
+    // Si no hay etiquetas seleccionadas, mostrar todos
+    if (selectedTags.length === 0) return true
+    
+    // Verificar si el artículo tiene al menos una de las etiquetas seleccionadas
+    return selectedTags.some((tag) => item.tags.includes(tag))
   })
 
   const toggleTag = (tag: string) => {
@@ -97,7 +143,9 @@ export function ResearchRepositoryPanel({ isOpen, onClose }: ResearchRepositoryP
           <div className="flex items-center justify-between p-6 border-b border-border bg-gradient-to-r from-primary/10 to-accent/10">
             <div>
               <h2 className="text-2xl font-bold text-foreground">Repositorio de Investigaciones</h2>
-              <p className="text-sm text-muted-foreground mt-1">Filtra artículos por etiquetas</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Artículos sobre E-waste y gestión de residuos electrónicos
+              </p>
             </div>
             <button
               onClick={onClose}
@@ -135,7 +183,48 @@ export function ResearchRepositoryPanel({ isOpen, onClose }: ResearchRepositoryP
 
             {/* Resultados */}
             <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">Resultados ({filteredResearch.length})</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Resultados ({filteredResearch.length})
+                </h3>
+                {isLoading && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Cargando...
+                  </div>
+                )}
+              </div>
+              
+              {loadError && (
+                <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <p className="text-xs text-destructive">{loadError}</p>
+                </div>
+              )}
+              
+              {!isLoading && !loadError && researchItems.length === 0 && (
+                <div className="p-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    No se pudieron cargar artículos de arXiv.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Recarga la página para intentar nuevamente.
+                  </p>
+                </div>
+              )}
+              
+              {!isLoading && !loadError && researchItems.length > 0 && filteredResearch.length === 0 && (
+                <div className="p-8 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    No se encontraron artículos con los filtros seleccionados.
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Total de artículos disponibles: {researchItems.length}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Intenta ajustar o quitar los filtros.
+                  </p>
+                </div>
+              )}
               <div className="space-y-4">
                 {filteredResearch.map((item) => (
                   <div
@@ -151,11 +240,13 @@ export function ResearchRepositoryPanel({ isOpen, onClose }: ResearchRepositoryP
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex-shrink-0 p-1.5 rounded-md hover:bg-muted transition-colors"
+                        title="Ver en arXiv"
+                        aria-label="Ver artículo en arXiv"
                       >
                         <ExternalLink className="h-4 w-4 text-muted-foreground" />
                       </a>
                     </div>
-                    <p className="text-xs text-muted-foreground mb-2">{item.authors}</p>
+                    <p className="text-xs text-muted-foreground mb-2 line-clamp-1">{item.authors}</p>
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
@@ -163,7 +254,7 @@ export function ResearchRepositoryPanel({ isOpen, onClose }: ResearchRepositoryP
                       </span>
                       <span className="text-xs px-2 py-0.5 bg-accent/20 text-accent rounded">{item.source}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{item.abstract}</p>
+                    <p className="text-xs text-muted-foreground mb-3 line-clamp-3">{item.abstract}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {item.tags.map((tag) => (
                         <span key={tag} className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full">
