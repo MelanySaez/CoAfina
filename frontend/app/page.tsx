@@ -94,8 +94,8 @@ export default function LandingPage() {
         <div className="absolute inset-0 -z-10">
           {/* Imagen de fondo con overlay - Placeholder temporal */}
           <div 
-            className="absolute inset-0 bg-cover bg-center opacity-[0.07]"
-            style={{backgroundImage: "url('https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=1920&q=80')"}}
+            className="absolute inset-0 bg-cover bg-center opacity-[1]"
+            style={{backgroundImage: "url('https://images.unsplash.com/photo-1612965110667-4175024b0dcc?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1935')"}}
           />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" />
@@ -196,7 +196,7 @@ export default function LandingPage() {
             <div className="relative scroll-reveal-right">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-4 border-primary/20">
                 <img 
-                  src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=1200&q=80" 
+                  src="https://media.istockphoto.com/id/2189587500/es/foto/primer-plano-de-cajas-con-piezas-de-computadora-clasificadas-para-reciclar-en-una-f%C3%A1brica-de.webp?a=1&b=1&s=612x612&w=0&k=20&c=jzMbwajUW6SdU3XzVauNuVubltN48y6src56wwWMW30=" 
                   alt="Proceso de reciclaje de residuos electrónicos"
                   className="w-full h-full object-cover"
                 />
