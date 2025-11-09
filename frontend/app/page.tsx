@@ -157,63 +157,75 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="flex h-screen flex-col bg-gradient-to-br from-background via-background to-muted/30">
       <Header />
 
       {/* Pestañas */}
-      <div className="flex border-b border-border">
-        <button
-          onClick={() => setActiveTab("workspace")}
-          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-            activeTab === "workspace"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Análisis Comparativo
-        </button>
-        <button
-          onClick={() => setActiveTab("data-panel")}
-          className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
-            activeTab === "data-panel"
-              ? "border-b-2 border-primary text-primary"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Panel de Datos
-        </button>
+      <div className="border-b-2 border-border/50 bg-gradient-to-r from-card/30 via-card/50 to-card/30 backdrop-blur-sm">
+        <div className="grid grid-cols-2">
+          {/* Análisis Comparativo tab */}
+          <button
+            onClick={() => setActiveTab("workspace")}
+            className={`px-6 py-4 text-sm font-bold transition-all relative group border-r border-border/30 ${
+              activeTab === "workspace" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Análisis Comparativo
+            {activeTab === "workspace" && (
+              <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-blue-400 to-cyan-400 rounded-t-full shadow-lg shadow-blue-500/50"></div>
+            )}
+          </button>
+
+          {/* Panel de Datos tab */}
+          <button
+            onClick={() => setActiveTab("data-panel")}
+            className={`px-6 py-4 text-sm font-bold transition-all relative group ${
+              activeTab === "data-panel" ? "text-secondary" : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Panel de Datos
+            {activeTab === "data-panel" && (
+              <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-green-500 via-emerald-400 to-teal-400 rounded-t-full shadow-lg shadow-green-500/50"></div>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Contenido */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-hidden">
         {activeTab === "workspace" && (
-          <div className="flex flex-col gap-4 p-6">
-            {/* Estado de carga y errores */}
-            {loading && (
-              <div className="bg-card rounded-lg border border-border p-8 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3"></div>
-                <p className="text-sm text-muted-foreground">Cargando países desde el backend...</p>
-              </div>
-            )}
+          <div className="h-full overflow-y-auto">
+            <div className="flex flex-col gap-6 p-8">
+              {/* Estado de carga y errores */}
+              {loading && (
+                <div className="bg-card rounded-lg border border-border p-8 text-center">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3"></div>
+                  <p className="text-sm text-muted-foreground">Cargando países desde el backend...</p>
+                </div>
+              )}
 
-            {error && (
-              <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4">
-                <p className="text-sm text-destructive font-medium">⚠️ {error}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Asegúrate de que el backend esté ejecutándose en http://localhost:8000
-                </p>
-              </div>
-            )}
+              {error && (
+                <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4">
+                  <p className="text-sm text-destructive font-medium">⚠️ {error}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Asegúrate de que el backend esté ejecutándose en http://localhost:8000
+                  </p>
+                </div>
+              )}
 
-            {!loading && !error && (
-              <>
-                {/* Países sin asignar */}
-                <div className="bg-card rounded-lg border border-border p-4 shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-sm font-semibold text-foreground">
-                        Países disponibles ({unplacedCountries.length})
-                      </h3>
+              {!loading && !error && (
+                <>
+                  {/* Países sin asignar */}
+                  <div className="gradient-card rounded-2xl border-2 border-border/30 p-6 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-lg font-black text-foreground bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                          Países Disponibles para Análisis
+                        </h3>
+                        <p className="text-xs text-muted-foreground mt-1 font-medium">
+                          Arrastra los países a los lados para compararlos ({unplacedCountries.length} disponibles)
+                        </p>
+                      </div>
                       {(leftCountries.length > 0 || rightCountries.length > 0) && (
                         <button
                           onClick={resetCountries}
@@ -230,164 +242,145 @@ export default function Home() {
                         </button>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-muted-foreground hidden sm:block">Desliza o usa las flechas</p>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={scrollLeft}
-                          className="p-1.5 rounded-md bg-secondary/50 hover:bg-secondary text-foreground transition-colors border border-border hover:border-primary"
-                          aria-label="Scroll izquierda"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="15 18 9 12 15 6"></polyline>
-                          </svg>
-                        </button>
-                        <button
-                          onClick={scrollRight}
-                          className="p-1.5 rounded-md bg-secondary/50 hover:bg-secondary text-foreground transition-colors border border-border hover:border-primary"
-                          aria-label="Scroll derecha"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                          </svg>
-                        </button>
+                    
+                    <div className="relative group">
+                      {/* Botón flotante izquierdo */}
+                      <button
+                        onClick={scrollLeft}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-background/90 backdrop-blur-sm border-2 border-primary/30 shadow-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
+                        aria-label="Anterior"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                      </button>
+
+                      {/* Botón flotante derecho */}
+                      <button
+                        onClick={scrollRight}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-background/90 backdrop-blur-sm border-2 border-primary/30 shadow-lg hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all opacity-0 group-hover:opacity-100"
+                        aria-label="Siguiente"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </button>
+
+                      {/* Sombra izquierda */}
+                      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-card to-transparent pointer-events-none z-10" />
+                      {/* Sombra derecha */}
+                      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-card to-transparent pointer-events-none z-10" />
+
+                      <div
+                        ref={carouselRef}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDropOnUnplaced}
+                        className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent hover:scrollbar-thumb-primary/50 scroll-smooth"
+                        style={{ scrollbarWidth: 'thin' }}
+                      >
+                        {unplacedCountries.map((country) => (
+                          <div
+                            key={country.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, country.id)}
+                            className="group cursor-move flex-shrink-0 w-28 hover:scale-110 transition-all duration-300 flex flex-col items-center justify-center gap-2 text-center"
+                          >
+                            <div className="relative p-3 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border-2 border-border group-hover:border-primary group-hover:shadow-xl group-hover:shadow-primary/30 transition-all">
+                              <FlagIcon countryCode={country.code} countryName={country.name} size="lg" />
+                            </div>
+                            <div className="text-[10px] font-bold text-foreground/80 w-full truncate px-1">
+                              {country.name}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <div className="relative group">
-                    {/* Botón flotante izquierdo */}
-                    <button
-                      onClick={scrollLeft}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-lg hover:bg-primary hover:text-primary-foreground transition-all opacity-0 group-hover:opacity-100"
-                      aria-label="Anterior"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6"></polyline>
-                      </svg>
-                    </button>
 
-                    {/* Botón flotante derecho */}
-                    <button
-                      onClick={scrollRight}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-background/90 backdrop-blur-sm border border-border shadow-lg hover:bg-primary hover:text-primary-foreground transition-all opacity-0 group-hover:opacity-100"
-                      aria-label="Siguiente"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="9 18 15 12 9 6"></polyline>
-                      </svg>
-                    </button>
-
-                    {/* Sombra izquierda */}
-                    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-card to-transparent pointer-events-none z-10" />
-                    {/* Sombra derecha */}
-                    <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-card to-transparent pointer-events-none z-10" />
-
+                  {/* Pizarra dividida */}
+                  <div className="flex gap-6">
+                    {/* Lado izquierdo */}
                     <div
-                      ref={carouselRef}
                       onDragOver={handleDragOver}
-                      onDrop={handleDropOnUnplaced}
-                      className="flex gap-4 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40 scroll-smooth"
-                      style={{ scrollbarWidth: 'thin' }}
+                      onDrop={() => handleDropOnSide("left")}
+                      className="flex-1 rounded-2xl border-3 border-dashed border-primary/40 bg-gradient-to-br from-primary/8 via-card to-card p-8 flex flex-col min-h-[450px] shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all hover:border-primary/60"
                     >
-                      {unplacedCountries.map((country) => (
-                        <div
-                          key={country.id}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, country.id)}
-                          className="group cursor-move flex-shrink-0 w-28 hover:scale-110 transition-transform duration-200 flex flex-col items-center justify-center gap-2 text-center"
-                        >
-                          <div className="relative p-2">
-                            <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
+                      <div className="mb-6">
+                        <h3 className="text-xl font-black text-primary mb-1">Análisis A</h3>
+                        <div className="h-1 w-12 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg shadow-primary/30"></div>
+                      </div>
+                      <div className="flex-1 grid grid-cols-3 gap-4 mb-6">
+                        {leftCountries.map((country) => (
+                          <div
+                            key={country.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, country.id)}
+                            className="cursor-move aspect-square rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 border-2 border-primary/60 hover:bg-gradient-to-br hover:from-primary/50 hover:to-primary/30 transition-all duration-300 flex flex-col items-center justify-center p-3 text-center hover:shadow-xl hover:shadow-primary/40 hover:scale-105 hover:-translate-y-2"
+                          >
+                            <div className="mb-2">
+                              <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
+                            </div>
+                            <div className="text-xs font-bold text-foreground">{country.name}</div>
                           </div>
-                          <div className="text-[10px] font-semibold text-foreground/80 w-full truncate px-1">
-                            {country.name}
-                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t-2 border-primary/30 pt-5 space-y-3 bg-gradient-to-r from-primary/5 to-transparent rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-muted-foreground">AEE POM:</span>
+                          <span className="text-lg font-black text-primary">{leftMetrics.aee_pom.toFixed(2)} kg/hab</span>
                         </div>
-                      ))}
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-muted-foreground">RAEE Generados:</span>
+                          <span className="text-lg font-black text-primary">{leftMetrics.raee_generados.toFixed(2)} kg/hab</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-1.5 bg-gradient-to-b from-transparent via-primary to-transparent rounded-full shadow-lg shadow-primary/30" />
+
+                    {/* Lado derecho */}
+                    <div
+                      onDragOver={handleDragOver}
+                      onDrop={() => handleDropOnSide("right")}
+                      className="flex-1 rounded-2xl border-3 border-dashed border-secondary/40 bg-gradient-to-br from-secondary/8 via-card to-card p-8 flex flex-col min-h-[450px] shadow-xl hover:shadow-2xl hover:shadow-secondary/20 transition-all hover:border-secondary/60"
+                    >
+                      <div className="mb-6">
+                        <h3 className="text-xl font-black text-secondary mb-1">Análisis B</h3>
+                        <div className="h-1 w-12 bg-gradient-to-r from-secondary to-accent rounded-full shadow-lg shadow-secondary/30"></div>
+                      </div>
+                      <div className="flex-1 grid grid-cols-3 gap-4 mb-6">
+                        {rightCountries.map((country) => (
+                          <div
+                            key={country.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, country.id)}
+                            className="cursor-move aspect-square rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/10 border-2 border-secondary/60 hover:bg-gradient-to-br hover:from-secondary/50 hover:to-secondary/30 transition-all duration-300 flex flex-col items-center justify-center p-3 text-center hover:shadow-xl hover:shadow-secondary/40 hover:scale-105 hover:-translate-y-2"
+                          >
+                            <div className="mb-2">
+                              <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
+                            </div>
+                            <div className="text-xs font-bold text-foreground">{country.name}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t-2 border-secondary/30 pt-5 space-y-3 bg-gradient-to-r from-secondary/5 to-transparent rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-muted-foreground">AEE POM:</span>
+                          <span className="text-lg font-black text-secondary">{rightMetrics.aee_pom.toFixed(2)} kg/hab</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-bold text-muted-foreground">RAEE Generados:</span>
+                          <span className="text-lg font-black text-secondary">{rightMetrics.raee_generados.toFixed(2)} kg/hab</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-            {/* Pizarra dividida */}
-            <div className="flex gap-4">
-              {/* Lado izquierdo */}
-              <div
-                onDragOver={handleDragOver}
-                onDrop={() => handleDropOnSide("left")}
-                className="flex-1 rounded-lg border-2 border-dashed border-primary/30 bg-card/50 p-6 flex flex-col min-h-[400px]"
-              >
-                <h3 className="text-sm font-semibold text-primary mb-4">Lado A</h3>
-                <div className="flex-1 grid grid-cols-3 gap-3 mb-4">
-                  {leftCountries.map((country) => (
-                    <div
-                      key={country.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, country.id)}
-                      className="group cursor-move aspect-square rounded-xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/50 hover:border-primary hover:shadow-xl hover:shadow-primary/20 hover:scale-105 transition-all duration-200 flex flex-col items-center justify-center p-3 text-center relative overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="relative z-10 mb-2">
-                        <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
-                      </div>
-                      <div className="text-xs font-semibold text-foreground relative z-10 px-2 py-1 bg-background/90 rounded-md backdrop-blur-sm">
-                        {country.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t border-border pt-3 space-y-1">
-                  <p className="text-xs text-muted-foreground">
-                    AEE POM: <span className="font-semibold text-foreground">{leftMetrics.aee_pom.toFixed(2)} kg/hab</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    RAEE Generados: <span className="font-semibold text-foreground">{leftMetrics.raee_generados.toFixed(2)} kg/hab</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Línea divisoria */}
-              <div className="w-1 bg-border" />
-
-              {/* Lado derecho */}
-              <div
-                onDragOver={handleDragOver}
-                onDrop={() => handleDropOnSide("right")}
-                className="flex-1 rounded-lg border-2 border-dashed border-accent/30 bg-card/50 p-6 flex flex-col min-h-[400px]"
-              >
-                <h3 className="text-sm font-semibold text-accent mb-4">Lado B</h3>
-                <div className="flex-1 grid grid-cols-3 gap-3 mb-4">
-                  {rightCountries.map((country) => (
-                    <div
-                      key={country.id}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, country.id)}
-                      className="group cursor-move aspect-square rounded-xl bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-2 border-accent/50 hover:border-accent hover:shadow-xl hover:shadow-accent/20 hover:scale-105 transition-all duration-200 flex flex-col items-center justify-center p-3 text-center relative overflow-hidden"
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="relative z-10 mb-2">
-                        <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
-                      </div>
-                      <div className="text-xs font-semibold text-foreground relative z-10 px-2 py-1 bg-background/90 rounded-md backdrop-blur-sm">
-                        {country.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="border-t border-border pt-3 space-y-1">
-                  <p className="text-xs text-muted-foreground">
-                    AEE POM: <span className="font-semibold text-foreground">{rightMetrics.aee_pom.toFixed(2)} kg/hab</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    RAEE Generados: <span className="font-semibold text-foreground">{rightMetrics.raee_generados.toFixed(2)} kg/hab</span>
-                  </p>
-                </div>
-              </div>
+                </>
+              )}
             </div>
-              </>
-            )}
           </div>
         )}
-  {activeTab === "data-panel" && <DataPanelTab />}
+        {activeTab === "data-panel" && <DataPanelTab />}
       </div>
     </div>
   )
