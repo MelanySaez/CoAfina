@@ -1,5 +1,6 @@
 # CoAfina
 ♻️ E-Waste | CoAfina Hackathon
+
 🌍 Introducción
 
 Durante la realización del Reto 3, comprendimos lo poco que se habla sobre el destino de la basura electrónica en el mundo. Este problema, aunque silencioso, tiene un impacto ambiental y social enorme, afectando especialmente a las comunidades más vulnerables de Latinoamérica y el Caribe.
