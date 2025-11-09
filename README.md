@@ -21,7 +21,11 @@ E-Waste es una herramienta open source de análisis y visualización interactiva
 
 🎯 Objetivo
 
-Facilitar la toma de decisiones informadas y promover la conciencia pública sobre el impacto de los residuos electrónicos, impulsando una economía circular y la gestión sostenible del e-waste en Latinoamérica y el Caribe.
+Proponer un prototipo digital que utilice los datos abiertos existentes sobre residuos electrónicos y, al mismo tiempo, promueva su expansión mediante la participación activa de los usuarios.
+
+De esta forma, cada contribución de datos se convierte en un recurso público que facilita futuras investigaciones, impulsa el interés académico y social en la problemática del e-waste y refuerza la colaboración abierta en torno a la sostenibilidad tecnológica.
+
+Además, el proyecto busca facilitar la toma de decisiones informadas y promover la conciencia pública sobre el impacto ambiental de los residuos electrónicos, impulsando una economía circular y una gestión sostenible del e-waste en Latinoamérica y el Caribe.
 
 ⚙️ Características principales
 
@@ -38,5 +42,15 @@ Facilitar la toma de decisiones informadas y promover la conciencia pública sob
 🚀 Impacto esperado
 
 E-Waste busca ser un punto de encuentro entre ciencia, tecnología y sostenibilidad, facilitando el acceso a información clave para gobiernos, empresas, investigadores y ciudadanos interesados en abordar el problema del e-waste de manera informada y colaborativa.
+
+📚 Fuentes de datos y contribución
+
+Para el desarrollo de E-Waste, se emplearon fuentes de datos abiertas y verificadas sobre la generación y gestión de residuos electrónicos:
+
+🌐 OECD Data Explorer – E-Waste Dataset
+
+📄 Regional E-Waste Monitor for Latin America (UNIDO-GEF / UNU-UNITAR, 2022)
+
+Además, la plataforma incentiva la contribución colaborativa de datos por parte de los usuarios, fortaleciendo el ecosistema de información disponible y apoyando futuras investigaciones e iniciativas sostenibles.
 
 Link de E-Waste: https://co-afina-b4wp.vercel.app/
