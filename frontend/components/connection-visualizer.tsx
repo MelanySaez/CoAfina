@@ -2,7 +2,24 @@
 
 import { useMemo } from "react"
 
-export function ConnectionVisualizer({ blocks, connections }) {
+interface Block {
+  id: string
+  x: number
+  y: number
+}
+
+interface Connection {
+  id: string
+  from: string
+  to: string
+}
+
+interface ConnectionVisualizerProps {
+  blocks: Block[]
+  connections: Connection[]
+}
+
+export function ConnectionVisualizer({ blocks, connections }: ConnectionVisualizerProps) {
   const connectionPaths = useMemo(() => {
     return connections.map((conn) => {
       const fromBlock = blocks.find((b) => b.id === conn.from)
