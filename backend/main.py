@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from utils.validations import *
+from backend.utils.validations import *
 import pandas as pd
 from pathlib import Path
 from typing import List, Optional
