@@ -244,19 +244,16 @@ async def compare_countries(
     }
 
 @app.post("/upload-csv")
-def is_valid_csv(file: UploadFile) -> tuple[bool, str]:
-    """Valida CSV subido con FastAPI, detectando correctamente el delimitador."""
+def is_valid_csv(file: UploadFile):
     try:
         sample_bytes = file.file.read(4096)
         try:
             sample_text = sample_bytes.decode("utf-8-sig")
         except UnicodeDecodeError:
-            return False, "Archivo no codificado en UTF-8 o con errores de formato."
+            return {"valid": False, "message": "Archivo no codificado en UTF-8 o con errores de formato."}
 
-        # Detectar delimitador confiable
         delimiter = detect_delimiter(sample_text)
 
-        # Leer todo el contenido
         file.file.seek(0)
         decoded_text = file.file.read().decode("utf-8-sig")
         reader = csv.reader(io.StringIO(decoded_text), delimiter=delimiter)
@@ -265,18 +262,18 @@ def is_valid_csv(file: UploadFile) -> tuple[bool, str]:
 
         valido_nombre, mensaje_nombre = validar_nombres(file.filename, headers)
         if not valido_nombre:
-            return False, mensaje_nombre
+            return {"valid": False, "message": mensaje_nombre}
 
         columnas_reconocidas = set(filter(None, columnas_normalizadas))
         if len(columnas_reconocidas) < 2:
-            return False, "El CSV no contiene suficientes columnas reconocidas para validarlo."
+            return {"valid": False, "message": "El CSV no contiene suficientes columnas reconocidas para validarlo."}
 
-        return True, f"CSV válido. Delimitador detectado: '{delimiter}'"
-
+        return {"valid": True, "message": f"CSV válido. Delimitador detectado: '{delimiter}'"}
     except Exception as e:
-        return False, f"Error al validar CSV: {e}"
+        return {"valid": False, "message": f"Error al validar CSV: {e}"}
     finally:
         file.file.seek(0)
+
 
 
 if __name__ == "__main__":
