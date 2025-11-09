@@ -7,18 +7,19 @@ interface FlagIconProps {
 }
 
 export function FlagIcon({ countryCode, countryName, size = "md" }: FlagIconProps) {
+  // Proporciones rectangulares 3:2 para banderas
   const sizeClasses = {
-    sm: "w-8 h-8",
-    md: "w-12 h-12",
-    lg: "w-16 h-16",
-    xl: "w-20 h-20",
+    sm: "w-10 h-7",
+    md: "w-14 h-10",
+    lg: "w-20 h-14",
+    xl: "w-24 h-16",
   }
 
   const iconSize = {
-    sm: 32,
-    md: 48,
-    lg: 64,
-    xl: 80,
+    sm: { width: 40, height: 28 },
+    md: { width: 56, height: 40 },
+    lg: { width: 80, height: 56 },
+    xl: { width: 96, height: 64 },
   }
 
   return (
@@ -26,9 +27,9 @@ export function FlagIcon({ countryCode, countryName, size = "md" }: FlagIconProp
       <Image
         src={`https://flagcdn.com/${countryCode}.svg`}
         alt={`Bandera de ${countryName}`}
-        width={iconSize[size]}
-        height={iconSize[size]}
-        className="rounded-md shadow-md object-cover"
+        width={iconSize[size].width}
+        height={iconSize[size].height}
+        className="rounded shadow-md object-contain"
         unoptimized
       />
     </div>

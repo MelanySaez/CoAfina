@@ -5,12 +5,13 @@ import { useState, useEffect, useRef } from "react"
 import { Header } from "@/components/header"
 import { DataPanelTab } from "@/components/data-panel-tab"
 import { FlagIcon } from "@/components/flag-icon"
+import { VSComparisonPanel } from "@/components/vs-comparison-panel"
 import { API_CONFIG, buildApiUrl } from "@/lib/api-config"
 import type { CountryPlacement, CountryMetrics } from "@/utils/interfaces"
 import { getCountryCode, getCountryFlag } from "@/utils/helpers"
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState("workspace")
+  const [activeTab, setActiveTab] = useState("comparison")
   const [countries, setCountries] = useState<CountryPlacement[]>([])
   const [draggedCountry, setDraggedCountry] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -165,13 +166,13 @@ export default function Home() {
         <div className="grid grid-cols-2">
           {/* Análisis Comparativo tab */}
           <button
-            onClick={() => setActiveTab("workspace")}
+            onClick={() => setActiveTab("comparison")}
             className={`px-6 py-4 text-sm font-bold transition-all relative group border-r border-border/30 ${
-              activeTab === "workspace" ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              activeTab === "comparison" ? "text-primary" : "text-muted-foreground hover:text-foreground"
             }`}
           >
             Análisis Comparativo
-            {activeTab === "workspace" && (
+            {activeTab === "comparison" && (
               <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-500 via-blue-400 to-cyan-400 rounded-t-full shadow-lg shadow-blue-500/50"></div>
             )}
           </button>
@@ -193,40 +194,40 @@ export default function Home() {
 
       {/* Contenido */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === "workspace" && (
+        {activeTab === "comparison" && (
           <div className="h-full overflow-y-auto">
             <div className="flex flex-col gap-6 p-8">
               {/* Estado de carga y errores */}
-              {loading && (
-                <div className="bg-card rounded-lg border border-border p-8 text-center">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3"></div>
-                  <p className="text-sm text-muted-foreground">Cargando países desde el backend...</p>
-                </div>
-              )}
+                  {loading && (
+                    <div className="bg-card rounded-lg border border-border p-8 text-center">
+                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-3"></div>
+                      <p className="text-sm text-muted-foreground">Cargando países desde el backend...</p>
+                    </div>
+                  )}
 
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4">
-                  <p className="text-sm text-destructive font-medium">⚠️ {error}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Asegúrate de que el backend esté ejecutándose en http://localhost:8000
-                  </p>
-                </div>
-              )}
+                  {error && (
+                    <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-4">
+                      <p className="text-sm text-destructive font-medium">⚠️ {error}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Asegúrate de que el backend esté ejecutándose en http://localhost:8000
+                      </p>
+                    </div>
+                  )}
 
-              {!loading && !error && (
-                <>
-                  {/* Países sin asignar */}
-                  <div className="gradient-card rounded-2xl border-2 border-border/30 p-6 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-black text-foreground bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                          Países Disponibles para Análisis
-                        </h3>
-                        <p className="text-xs text-muted-foreground mt-1 font-medium">
-                          Arrastra los países a los lados para compararlos ({unplacedCountries.length} disponibles)
-                        </p>
-                      </div>
-                      {(leftCountries.length > 0 || rightCountries.length > 0) && (
+                  {!loading && !error && (
+                    <>
+                      {/* Países sin asignar */}
+                      <div className="gradient-card rounded-2xl border-2 border-border/30 p-6 shadow-xl hover:shadow-2xl hover:shadow-primary/20 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <h3 className="text-lg font-black text-foreground bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                              Países Disponibles para Análisis
+                            </h3>
+                            <p className="text-xs text-muted-foreground mt-1 font-medium">
+                              Arrastra los países a los lados para compararlos ({unplacedCountries.length} disponibles)
+                            </p>
+                          </div>
+                          {(leftCountries.length > 0 || rightCountries.length > 0) && (
                         <button
                           onClick={resetCountries}
                           className="px-3 py-1.5 text-xs font-medium rounded-md bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 hover:border-primary/50 transition-all flex items-center gap-1.5"
@@ -309,18 +310,18 @@ export default function Home() {
                         <h3 className="text-xl font-black text-primary mb-1">Análisis A</h3>
                         <div className="h-1 w-12 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg shadow-primary/30"></div>
                       </div>
-                      <div className="flex-1 grid grid-cols-3 gap-4 mb-6">
+                      <div className="flex-1 grid grid-cols-5 gap-2 mb-6">
                         {leftCountries.map((country) => (
                           <div
                             key={country.id}
                             draggable
                             onDragStart={(e) => handleDragStart(e, country.id)}
-                            className="cursor-move aspect-square rounded-xl bg-gradient-to-br from-primary/30 to-primary/10 border-2 border-primary/60 hover:bg-gradient-to-br hover:from-primary/50 hover:to-primary/30 transition-all duration-300 flex flex-col items-center justify-center p-3 text-center hover:shadow-xl hover:shadow-primary/40 hover:scale-105 hover:-translate-y-2"
+                            className="cursor-move aspect-square rounded-md bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/60 hover:bg-gradient-to-br hover:from-primary/50 hover:to-primary/30 transition-all duration-300 flex flex-col items-center justify-center p-1.5 text-center hover:shadow-lg hover:shadow-primary/40 hover:scale-105"
                           >
-                            <div className="mb-2">
-                              <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
+                            <div className="mb-0.5">
+                              <FlagIcon countryCode={country.code} countryName={country.name} size="sm" />
                             </div>
-                            <div className="text-xs font-bold text-foreground">{country.name}</div>
+                            <div className="text-[9px] font-bold text-foreground leading-tight truncate w-full px-0.5">{country.name}</div>
                           </div>
                         ))}
                       </div>
@@ -348,18 +349,18 @@ export default function Home() {
                         <h3 className="text-xl font-black text-secondary mb-1">Análisis B</h3>
                         <div className="h-1 w-12 bg-gradient-to-r from-secondary to-accent rounded-full shadow-lg shadow-secondary/30"></div>
                       </div>
-                      <div className="flex-1 grid grid-cols-3 gap-4 mb-6">
+                      <div className="flex-1 grid grid-cols-5 gap-2 mb-6">
                         {rightCountries.map((country) => (
                           <div
                             key={country.id}
                             draggable
                             onDragStart={(e) => handleDragStart(e, country.id)}
-                            className="cursor-move aspect-square rounded-xl bg-gradient-to-br from-secondary/30 to-secondary/10 border-2 border-secondary/60 hover:bg-gradient-to-br hover:from-secondary/50 hover:to-secondary/30 transition-all duration-300 flex flex-col items-center justify-center p-3 text-center hover:shadow-xl hover:shadow-secondary/40 hover:scale-105 hover:-translate-y-2"
+                            className="cursor-move aspect-square rounded-md bg-gradient-to-br from-secondary/30 to-secondary/10 border border-secondary/60 hover:bg-gradient-to-br hover:from-secondary/50 hover:to-secondary/30 transition-all duration-300 flex flex-col items-center justify-center p-1.5 text-center hover:shadow-lg hover:shadow-secondary/40 hover:scale-105"
                           >
-                            <div className="mb-2">
-                              <FlagIcon countryCode={country.code} countryName={country.name} size="xl" />
+                            <div className="mb-0.5">
+                              <FlagIcon countryCode={country.code} countryName={country.name} size="sm" />
                             </div>
-                            <div className="text-xs font-bold text-foreground">{country.name}</div>
+                            <div className="text-[9px] font-bold text-foreground leading-tight truncate w-full px-0.5">{country.name}</div>
                           </div>
                         ))}
                       </div>
@@ -376,6 +377,14 @@ export default function Home() {
                     </div>
                   </div>
                 </>
+                )}
+
+              {/* Panel de Comparación VS */}
+              {!loading && !error && (leftCountries.length > 0 || rightCountries.length > 0) && (
+                <VSComparisonPanel 
+                  leftCountries={leftCountries}
+                  rightCountries={rightCountries}
+                />
               )}
             </div>
           </div>
