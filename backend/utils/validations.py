@@ -14,7 +14,24 @@ COLUMNAS_VARIACIONES = {
     "tratado_toneladas": ["tratado", "tratado_toneladas", "treated_tons", "processed_tons", "tratamiento"],
     "reciclado_toneladas": ["reciclado", "recycled_tons", "reciclado_toneladas", "recycling"],
     "poblacion": ["poblacion", "population", "habitantes", "inhabitants"],
-    "ewaste_per_capita": ["ewaste_per_capita", "ewaste_pc", "ewaste/hab", "ewaste_pc_kg", "kg_per_capita", "kg_persona"],
+    # Nuevas claves reales
+    "AEE_POM_kg_hab": [
+        "aee_pom_kg_hab",
+        "aee pom kg/hab",
+        "aee_pom",
+        "aparatos_electricos_electronicos_por_hab",
+        "ee_waste_pc",
+        "ee_per_capita",
+        "aee_pc"
+    ],
+    "RAEE_generados_kg_hab": [
+        "raee_generados_kg_hab",
+        "raee generados kg/hab",
+        "raee_generados",
+        "raee_pc",
+        "ewaste_generated_per_capita",
+        "ewaste_generated_kg_hab"
+    ],
     "fuente": ["fuente", "source", "data_source"],
     "region": ["region", "región", "area", "zone", "continent"],
     "codigo_pais": ["codigo_pais", "country_code", "iso", "iso3", "iso_code"],
